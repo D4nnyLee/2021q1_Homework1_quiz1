@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "list.h"
 
@@ -33,6 +34,8 @@ static void list_display(node_t *list)
 
 int main(int argc, char **argv)
 {
+    srand(time(NULL));
+
     size_t count = 20;
 
     node_t *list = NULL;
