@@ -63,11 +63,19 @@ void quicksort(node_t **list)
             int val = pivot->value;
             pivot->next = NULL;
 
+            int cnt_left = 0, cnt_right = 0;
             node_t *left = NULL, *right = NULL;
             while (n != end[i]) {
                 node_t *tmp = n;
                 n = n->next;
-                list_add_node_t(tmp->value > val ? &right : &left, tmp);
+
+                if (tmp->value > val) {
+                    ++cnt_right;
+                    list_add_node_t(&right, tmp);
+                } else {
+                    ++cnt_left;
+                    list_add_node_t(&left, tmp);
+                }
             }
 
             list_concat(&right, end[i]);
@@ -78,6 +86,16 @@ void quicksort(node_t **list)
             beg[i + 1] = &pivot->next;
             end[i + 1] = end[i];
             end[i++] = pivot;
+
+            if (cnt_left < cnt_right) {
+                node_t **beg_swap = beg[i];
+                beg[i] = beg[i - 1];
+                beg[i - 1] = beg_swap;
+
+                node_t *end_swap = end[i];
+                end[i] = end[i - 1];
+                end[i - 1] = end_swap;
+            }
         }
     }
 
