@@ -48,24 +48,38 @@ void quicksort(node_t **list)
     if (!*list)
         return;
 
-    node_t *pivot = *list;
-    int value = pivot->value;
-    node_t *p = pivot->next;
-    pivot->next = NULL;
+#define MAX_LEVEL 300
 
-    node_t *left = NULL, *right = NULL;
-    while (p) {
-        node_t *n = p;
-        p = p->next;
-        list_add_node_t(n->value > value ? &right : &left, n);
+    node_t **beg[MAX_LEVEL], *end[MAX_LEVEL];
+
+    beg[0] = list;
+    end[0] = NULL;
+
+    for (int i = 0; i >= 0;) {
+        if (*beg[i] == end[i])
+            --i;
+        else {
+            node_t *pivot = *beg[i], *n = pivot->next;
+            int val = pivot->value;
+            pivot->next = NULL;
+
+            node_t *left = NULL, *right = NULL;
+            while (n != end[i]) {
+                node_t *tmp = n;
+                n = n->next;
+                list_add_node_t(tmp->value > val ? &right : &left, tmp);
+            }
+
+            list_concat(&right, end[i]);
+            list_concat(&pivot, right);
+            list_concat(&left, pivot);
+            *beg[i] = left;
+
+            beg[i + 1] = &pivot->next;
+            end[i + 1] = end[i];
+            end[i++] = pivot;
+        }
     }
 
-    quicksort(&left);
-    quicksort(&right);
-
-    node_t *result = NULL;
-    list_concat(&result, left);
-    list_concat(&result, pivot);
-    list_concat(&result, right);
-    *list = result;
+#undef MAX_LEVEL
 }
